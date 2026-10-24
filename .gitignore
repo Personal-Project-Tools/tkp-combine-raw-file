@@ -1,0 +1,5 @@
+ID.TKP.INOVA_FID/product_list*.xlsx
+output/daily_*.xlsx
+output/raw_data*.xlsx
+__pycache__/
+*.py[cod]
