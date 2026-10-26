@@ -17,7 +17,9 @@ Automated data pipeline for consolidating daily e-commerce product performance r
   - Formatted numbers (`0.00%` for rates, `#,##0` for counts and GMV).
   - Summary total row with double-line accounting border (`#595959`) and highlight fill (`#D9E1F2`).
   - Auto-adjusted column widths and frozen panes (`B2`).
+- **Report Drift Detection**: Automatically validates columns in `product_list*.xlsx` against the `raw_file_sample.xlsx` template. If platform export schema changes, halts execution with a clear `"Report Changed"` error to prevent data misalignment.
 - **Flexible Execution**: Run interactively via Tkinter dialogs or headless in scripts/pipelines.
+
 
 ---
 
@@ -98,8 +100,9 @@ Outputs are saved automatically in the `output/` directory:
 | Module | Responsibility | Key Functions |
 | :--- | :--- | :--- |
 | [`core.cleaner`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/core/cleaner.py) | Data normalization | `clean_numeric`, `extract_date_from_excel` |
-| [`core.reader`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/core/reader.py) | File discovery & loading | `load_and_combine_product_files` |
+| [`core.reader`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/core/reader.py) | File discovery, loading & schema validation | `load_and_combine_product_files`, `validate_product_columns` |
 | [`core.processor`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/core/processor.py) | Aggregation & rate calculation | `create_daily_summary`, `calculate_total_summary` |
 | [`exporters.styles`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/exporters/styles.py) | Design tokens for Excel | Fonts, Fills, Borders, Dimensions |
 | [`exporters.excel_exporter`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/exporters/excel_exporter.py) | OpenPyXL workbook generation | `export_raw_data`, `export_daily_summary_to_excel` |
-| [`ui.dialogs`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/ui/dialogs.py) | User selection dialogs | `select_input_folder`, `select_working_file` |
+| [`ui.dialogs`](file:///e:/ada_tools/TKP/tkp-combine-raw-file/ui/dialogs.py) | User selection dialogs & auto-detection | `detect_working_file`, `select_input_folder`, `select_working_file` |
+
