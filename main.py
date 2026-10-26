@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from core.reader import load_and_combine_product_files
+from core.reader import load_and_combine_product_files, ReportChangedError
 from core.processor import create_daily_summary
 from exporters.excel_exporter import (
     export_raw_data,
@@ -33,9 +33,13 @@ def run_pipeline(
             if not working_file:
                 return
 
-    # Step 2: Read and combine product_list files
+    # Step 2: Read and combine product_list files (with column validation against working_file)
     print(f"\nProcessing files from: {folder_path}...")
-    combined_df, file_count = load_and_combine_product_files(folder_path)
+    try:
+        combined_df, file_count = load_and_combine_product_files(folder_path, working_file=working_file)
+    except ReportChangedError as e:
+        print(f"\n[ERROR] {e}")
+        return
 
     if combined_df.empty:
         print(f"No data or `product_list` files were found in {folder_path}.")
