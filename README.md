@@ -60,9 +60,9 @@ pip install -r requirements.txt
 ### 2. Usage
 
 #### Interactive Mode (GUI)
-Run `main.py` directly. File picker dialogs will prompt you to select:
-1. The folder containing your daily `product_list*.xlsx` files.
-2. The working template file (e.g. `raw_file_sample.xlsx`).
+Run `main.py` directly:
+1. Select the folder containing your daily `product_list*.xlsx` files via the dialog.
+2. The working template file (`raw_file_sample.xlsx`) located in the root directory is **automatically detected**. If not found, a file picker will prompt you to select one.
 
 ```bash
 python main.py
@@ -76,7 +76,8 @@ from main import run_pipeline
 
 run_pipeline(
     folder_path="path/to/product_list_folder",
-    working_file="path/to/raw_file_sample.xlsx"
+    working_file="path/to/raw_file_sample.xlsx",  # Optional: auto-detects if None
+    output_dir="output"                          # Optional: defaults to 'output/' folder
 )
 ```
 
@@ -84,10 +85,11 @@ run_pipeline(
 
 ## 📊 Output Files
 
-Outputs are saved in the same directory as the selected working file:
+Outputs are saved automatically in the `output/` directory:
 
 1. **`raw_data_<MonthYear>.xlsx`**: Template workbook with all raw consolidated records written to the `raw data` sheet.
 2. **`daily_summary_<MonthYear>.xlsx`**: Styled daily performance metrics with auto-fitted column widths, frozen headers, and calculated totals.
+
 
 ---
 

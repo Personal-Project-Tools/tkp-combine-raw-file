@@ -8,13 +8,14 @@ from exporters.excel_exporter import (
     export_daily_summary_to_excel,
     get_month_suffix,
 )
-from ui.dialogs import select_input_folder, select_working_file
+from ui.dialogs import select_input_folder, select_working_file, detect_working_file
 
 
 def run_pipeline(
     folder_path: Optional[str] = None,
     working_file: Optional[str] = None,
     custom_month_suffix: Optional[str] = None,
+    output_dir: Optional[str] = None,
 ) -> None:
     """Execute the end-to-end raw files consolidation and daily summary generation pipeline."""
     # Step 1: Select folder and template file if not passed directly
@@ -24,9 +25,13 @@ def run_pipeline(
             return
 
     if not working_file:
-        working_file = select_working_file()
-        if not working_file:
-            return
+        working_file = detect_working_file()
+        if working_file:
+            print(f"Auto-detected raw file template: {os.path.basename(working_file)}")
+        else:
+            working_file = select_working_file()
+            if not working_file:
+                return
 
     # Step 2: Read and combine product_list files
     print(f"\nProcessing files from: {folder_path}...")
@@ -38,7 +43,13 @@ def run_pipeline(
 
     # Determine month suffix: uses custom_month_suffix if provided, otherwise auto-detects from data
     month_suffix = custom_month_suffix or get_month_suffix(combined_df["Day"])
-    output_dir = os.path.dirname(working_file)
+
+    # Output directory defaults to the 'output' folder in the project root
+    if not output_dir:
+        project_root = os.path.dirname(os.path.abspath(__file__))
+        output_dir = os.path.join(project_root, "output")
+
+    os.makedirs(output_dir, exist_ok=True)
 
     # Step 3: Populate raw data sheet into the working template
     print(f"\nOpening template file {os.path.basename(working_file)}...")
@@ -69,7 +80,8 @@ def run_pipeline(
 
 
 if __name__ == "__main__":
-    CUSTOM_MONTH_SUFFIX = 'Aug26'
+    # Set to a string (e.g. 'Aug26') to override, or None to auto-detect from data (e.g. 'Sep26')
+    CUSTOM_MONTH_SUFFIX = None
 
     run_pipeline(custom_month_suffix=CUSTOM_MONTH_SUFFIX)
 
